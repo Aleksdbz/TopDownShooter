@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+
+  private Player player;
+  
   private PlayerControlls controlls;
   private CharacterController CharacterController;
   private Animator animator;
@@ -26,19 +29,15 @@ public class PlayerMovement : MonoBehaviour
 
   public Vector2 moveInput;
   public Vector2 aimInput;
-
-  private void Awake()
-  {
-    AssignInputEvents();
-  }
-
- 
-
+  
   private void Start()
   {
+
+    player = GetComponent<Player>();
     CharacterController = GetComponent<CharacterController>();
     animator = GetComponentInChildren<Animator>();
     speed = walkspeed;
+    AssignInputEvents();
   }
 
   private void Update()
@@ -47,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     AimTowardsMouse();
     AnimatorController();
   }
-
+  
   private void AnimatorController()
   {
     float VelX = Vector3.Dot(movementdirection.normalized, transform.right);
@@ -94,15 +93,12 @@ public class PlayerMovement : MonoBehaviour
     else
       verticalvelocity = -.5f;
   }
-
-  #region NewInputSystem
-
   private void AssignInputEvents()
   {
-    controlls = new PlayerControlls();
+    controlls = player.controlls;
     controlls.Character.Movement.performed += context => moveInput = context.ReadValue<Vector2>();
     controlls.Character.Movement.canceled += context => moveInput = Vector2.zero;
-
+    
     controlls.Character.Aim.performed += context => aimInput = context.ReadValue<Vector2>();
     controlls.Character.Aim.canceled += context => aimInput = Vector2.zero;
 
@@ -117,16 +113,5 @@ public class PlayerMovement : MonoBehaviour
       isRunning = false;
     };
   }
-  private void OnEnable()
-  {
-    controlls.Enable();
-  }
-
-  private void OnDisable()
-  {
-    controlls.Disable();
-  }
-
-  #endregion
-
+  
 }
