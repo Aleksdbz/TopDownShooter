@@ -1,10 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class WeaponVisualController : MonoBehaviour
 {
+  //TEMPORARY PLACEHOLDER FOR TESTING AND DEBUGGING PURPOSES. IT’S GOING TO BE REPLACED LATER WITH A NEW INPUT SYSTEM AND MORE OPTIMISED CODE ITS BAD CODE PRACTICE AND ITS NOT CLEAN BUT WILL FIX IT LATER 
+  //FOR NOW JUST NEED IT TO WORK
 
 
   private Animator anim;
@@ -18,20 +19,47 @@ public class WeaponVisualController : MonoBehaviour
 
   private Transform currentGun;
 
-  [Header("Left Hand Ik")] [SerializeField]
-  private Transform leftHand;
+  [Header("Rig")] 
+  [SerializeField] private float rigIncreaseStep;
+  private bool rigShouldBeIncreased;
+
+  [Header("Left Hand Ik")] 
+  [SerializeField] private Transform leftHand;
+
+  private Rig rig;
 
 
   private void Start()
   {
     SwitchOn(pistol);
-    anim = GetComponentInParent<Animator>();
+    anim = GetComponentInChildren<Animator>();
+    rig = GetComponentInChildren<Rig>();
   }
 
   private void Update()
   {
+    CheckWeaponSwitch();
+    if (Input.GetKeyDown(KeyCode.R))
+    {
+      anim.SetTrigger("Reload");
+      rig.weight = 0;
+    }
+
+    
+    if (rigShouldBeIncreased)
+    {
+      rig.weight += rigIncreaseStep * Time.deltaTime;
+      if (rig.weight >= 1)
+        rigShouldBeIncreased = false;
+    }
+  }
+
+  public void ReturnRighWeightToOne() => rigShouldBeIncreased = true;
+
+  private void CheckWeaponSwitch()
+  {
     if (Input.GetKeyDown(KeyCode.Alpha1)) //TEMPORARY PLACEHOLDER FOR TESTING AND DEBUGGING PURPOSES. IT’S GOING TO BE REPLACED LATER WITH A NEW INPUT SYSTEM AND MORE OPTIMISED CODE ITS BAD CODE PRACTICE AND ITS NOT CLEAN BUT WILL FIX IT LATER 
-    //FOR NOW JUST NEED IT TO WORK
+      //FOR NOW JUST NEED IT TO WORK
     {
       SwitchOn(pistol);
       SwitchAnimationLayer(1);
@@ -59,8 +87,6 @@ public class WeaponVisualController : MonoBehaviour
       SwitchOn(rifle);
       SwitchAnimationLayer(3);
     }
-    
-    
   }
 
   private void SwitchOn(Transform gunTransforms)
@@ -71,7 +97,6 @@ public class WeaponVisualController : MonoBehaviour
 
     AttachLeftHand();
   }
-
   private void SwitchOffGuns()
   {
     for (int i = 0; i < gunTransforms.Length; i++)
@@ -79,7 +104,6 @@ public class WeaponVisualController : MonoBehaviour
       gunTransforms[i].gameObject.SetActive(false);
     }
   }
-
   private void AttachLeftHand()
   {
     Transform targetTransform = currentGun.GetComponentInChildren<LeftHandTargetTransform>().transform;
