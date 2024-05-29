@@ -6,6 +6,9 @@ using UnityEngine;
 public class WeaponVisualController : MonoBehaviour
 {
 
+
+  private Animator anim;
+
   [SerializeField] private Transform[] gunTransforms;
   [SerializeField] private Transform pistol;
   [SerializeField] private Transform revolver;
@@ -22,20 +25,41 @@ public class WeaponVisualController : MonoBehaviour
   private void Start()
   {
     SwitchOn(pistol);
+    anim = GetComponentInParent<Animator>();
   }
 
   private void Update()
   {
-    if (Input.GetKeyDown(KeyCode.Alpha1)) //TEMPORARY PLACEHOLDER FOR TESTING AND DEBUGGING PURPOSES. IT’S GOING TO BE REPLACED LATER WITH A NEW INPUT SYSTEM AND MORE OPTIMISED CODE
+    if (Input.GetKeyDown(KeyCode.Alpha1)) //TEMPORARY PLACEHOLDER FOR TESTING AND DEBUGGING PURPOSES. IT’S GOING TO BE REPLACED LATER WITH A NEW INPUT SYSTEM AND MORE OPTIMISED CODE ITS BAD CODE PRACTICE AND ITS NOT CLEAN BUT WILL FIX IT LATER 
+    //FOR NOW JUST NEED IT TO WORK
+    {
       SwitchOn(pistol);
+      SwitchAnimationLayer(1);
+    }
     if (Input.GetKeyDown(KeyCode.Alpha2))
+    {
       SwitchOn(revolver); 
+      SwitchAnimationLayer(1);
+    }
+
     if (Input.GetKeyDown(KeyCode.Alpha3))
+    {
       SwitchOn(autoRifle);
+      SwitchAnimationLayer(1);
+    }
+
     if (Input.GetKeyDown(KeyCode.Alpha4))
+    {
       SwitchOn(shotgun);
+      SwitchAnimationLayer(2);
+    }
+
     if (Input.GetKeyDown(KeyCode.Alpha5))
+    {
       SwitchOn(rifle);
+      SwitchAnimationLayer(3);
+    }
+    
     
   }
 
@@ -63,4 +87,14 @@ public class WeaponVisualController : MonoBehaviour
     leftHand.localPosition = targetTransform.localPosition;
     leftHand.localRotation = targetTransform.localRotation;
   }
+
+  private void SwitchAnimationLayer(int layerIndex)
+  {
+    for (int i = 1; i < anim.layerCount; i++)
+    {
+      anim.SetLayerWeight(i,0);
+    }
+    anim.SetLayerWeight(layerIndex,1);
+  }
+  
 }
