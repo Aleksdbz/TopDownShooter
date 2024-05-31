@@ -18,17 +18,9 @@ public class PlayerMovement : MonoBehaviour
   [SerializeField] private float runspeed;
   private float speed;
   private bool isRunning;
-
   private float verticalvelocity;
   private float gravityscale = 9.81f;
-
-  [Header("Aim Info")]
-  [SerializeField] private Transform aim;
-  [SerializeField] private LayerMask aimLayerMask;
-  private Vector3 lookingDirection;
-
   public Vector2 moveInput;
-  public Vector2 aimInput;
   
   private void Start()
   {
@@ -43,10 +35,9 @@ public class PlayerMovement : MonoBehaviour
   private void Update()
   {
     ApplyMovement();
-    AimTowardsMouse();
+    ApplyRotation();
     AnimatorController();
   }
-  
   private void AnimatorController()
   {
     float VelX = Vector3.Dot(movementdirection.normalized, transform.right);
@@ -57,21 +48,16 @@ public class PlayerMovement : MonoBehaviour
     bool playRunAnimation = isRunning && movementdirection.magnitude > 0;
     animator.SetBool("isRunning", playRunAnimation);
   }
-
-  private void AimTowardsMouse()
+  private void ApplyRotation()
   {
-    Ray ray = Camera.main.ScreenPointToRay(aimInput);
-
-    if (!Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, aimLayerMask)) return;
-    lookingDirection = hitInfo.point - transform.position;
+   
+    Vector3 lookingDirection = player.aim.GetMousePosition() - transform.position;
     lookingDirection.y = 0f;
     lookingDirection.Normalize();
 
     transform.forward = lookingDirection;
 
-    aim.position = new Vector3(hitInfo.point.x, transform.position.y +1 , hitInfo.point.z);
   }
-
   private void ApplyMovement()
   {
     movementdirection = new Vector3(moveInput.x, 0, moveInput.y);
@@ -82,7 +68,6 @@ public class PlayerMovement : MonoBehaviour
       CharacterController.Move(movementdirection * (Time.deltaTime * speed));
     }
   }
-
   private void ApplyGravity()
   {
     if (!CharacterController.isGrounded)
@@ -99,9 +84,6 @@ public class PlayerMovement : MonoBehaviour
     controlls.Character.Movement.performed += context => moveInput = context.ReadValue<Vector2>();
     controlls.Character.Movement.canceled += context => moveInput = Vector2.zero;
     
-    controlls.Character.Aim.performed += context => aimInput = context.ReadValue<Vector2>();
-    controlls.Character.Aim.canceled += context => aimInput = Vector2.zero;
-
     controlls.Character.Run.performed += context =>
     {
         speed = runspeed;
