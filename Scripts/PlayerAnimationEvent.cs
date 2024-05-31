@@ -5,26 +5,26 @@ using UnityEngine;
 public class PlayerAnimationEvent : MonoBehaviour
 {
 
-    private WeaponVisualController visualController;
+    private PlayerWeaponVisuals _visuals;
 
     private void Start()
     {
-        visualController = GetComponentInParent<WeaponVisualController>();
+        _visuals = GetComponentInParent<PlayerWeaponVisuals>();
     }
 
     public void ReloadIsOver()
     {
-        visualController.ReturnRighWeightToOne();
+        _visuals.MaximizeRighWeight();
     }
 
     public void ReturnRig()
     {
-        visualController.ReturnRighWeightToOne();
-        visualController.ReturnWeightToLeftHandIk();
+        _visuals.MaximizeRighWeight();
+        _visuals.MaximizeLeftHandWeight();
     }
 
     public void WeaponGrabIsOver()
     {
-        visualController.SetBusyGrabbingWeapon(false);
+        _visuals.SetBusyGrabbingWeapon(false);
     }
 }
