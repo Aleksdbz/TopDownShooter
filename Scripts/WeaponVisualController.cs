@@ -19,14 +19,18 @@ public class WeaponVisualController : MonoBehaviour
 
   private Transform currentGun;
 
-  [Header("Rig")] 
-  [SerializeField] private float rigIncreaseStep;
+  [Header("Rig")] [SerializeField] private float rigIncreaseStep;
   private bool rigShouldBeIncreased;
 
   [Header("Left Hand Ik")] 
-  [SerializeField] private Transform leftHand;
-
+  [SerializeField] private TwoBoneIKConstraint leftHandIK;
+  [SerializeField] private Transform leftHandIk_Target;
+  [SerializeField] private float lafthandIKIncreaseStep;
+  private bool shouldIncreaseLeftHandIKweight;
   private Rig rig;
+
+  private bool busyGrabbingWeapon;
+  
 
 
   private void Start()
@@ -34,18 +38,37 @@ public class WeaponVisualController : MonoBehaviour
     SwitchOn(pistol);
     anim = GetComponentInChildren<Animator>();
     rig = GetComponentInChildren<Rig>();
+    Debug.Log((float)GrabType.SideGrab);
   }
 
   private void Update()
   {
     CheckWeaponSwitch();
-    if (Input.GetKeyDown(KeyCode.R))
+    if (Input.GetKeyDown(KeyCode.R) && busyGrabbingWeapon == false)
     {
       anim.SetTrigger("Reload");
       rig.weight = 0;
     }
 
-    
+    UpdatRigWight();
+
+    UpdateLeftHandIKWeight();
+  }
+
+  private void UpdateLeftHandIKWeight()
+  {
+    if (shouldIncreaseLeftHandIKweight)
+    {
+      leftHandIK.weight += lafthandIKIncreaseStep * Time.deltaTime;
+      if (leftHandIK.weight >= 1)
+      {
+        shouldIncreaseLeftHandIKweight = false;
+      }
+    }
+  }
+
+  private void UpdatRigWight()
+  {
     if (rigShouldBeIncreased)
     {
       rig.weight += rigIncreaseStep * Time.deltaTime;
@@ -53,42 +76,59 @@ public class WeaponVisualController : MonoBehaviour
         rigShouldBeIncreased = false;
     }
   }
-
+  private void PlayWeaponGrabAnimation(GrabType grabType)
+  {
+      leftHandIK.weight = 0;
+      anim.SetFloat("WeaponGrabType",(float)grabType);
+      anim.SetTrigger("WeaponGrab");
+      SetBusyGrabbingWeapon(true);
+  }
+  public void SetBusyGrabbingWeapon(bool busy)
+  {
+    busyGrabbingWeapon = busy;
+    anim.SetBool("BusyGrabbingWeapon",busyGrabbingWeapon);
+  }
+  public void ReturnWeightToLeftHandIk() => shouldIncreaseLeftHandIKweight = true;
   public void ReturnRighWeightToOne() => rigShouldBeIncreased = true;
-
   private void CheckWeaponSwitch()
   {
-    if (Input.GetKeyDown(KeyCode.Alpha1)) //TEMPORARY PLACEHOLDER FOR TESTING AND DEBUGGING PURPOSES. IT’S GOING TO BE REPLACED LATER WITH A NEW INPUT SYSTEM AND MORE OPTIMISED CODE ITS BAD CODE PRACTICE AND ITS NOT CLEAN BUT WILL FIX IT LATER 
+    if (Input.GetKeyDown(KeyCode
+          .Alpha1)) //TEMPORARY PLACEHOLDER FOR TESTING AND DEBUGGING PURPOSES. IT’S GOING TO BE REPLACED LATER WITH A NEW INPUT SYSTEM AND MORE OPTIMISED CODE ITS BAD CODE PRACTICE AND ITS NOT CLEAN BUT WILL FIX IT LATER 
       //FOR NOW JUST NEED IT TO WORK
     {
       SwitchOn(pistol);
       SwitchAnimationLayer(1);
+      PlayWeaponGrabAnimation(GrabType.SideGrab);
     }
+
     if (Input.GetKeyDown(KeyCode.Alpha2))
     {
-      SwitchOn(revolver); 
+      SwitchOn(revolver);
       SwitchAnimationLayer(1);
+      PlayWeaponGrabAnimation(GrabType.SideGrab);
     }
 
     if (Input.GetKeyDown(KeyCode.Alpha3))
     {
       SwitchOn(autoRifle);
       SwitchAnimationLayer(1);
+      PlayWeaponGrabAnimation(GrabType.BackGrab);
     }
 
     if (Input.GetKeyDown(KeyCode.Alpha4))
     {
       SwitchOn(shotgun);
       SwitchAnimationLayer(2);
+      PlayWeaponGrabAnimation(GrabType.BackGrab);
     }
 
     if (Input.GetKeyDown(KeyCode.Alpha5))
     {
       SwitchOn(rifle);
       SwitchAnimationLayer(3);
+      PlayWeaponGrabAnimation(GrabType.BackGrab);
     }
   }
-
   private void SwitchOn(Transform gunTransforms)
   {
     SwitchOffGuns();
@@ -108,17 +148,18 @@ public class WeaponVisualController : MonoBehaviour
   {
     Transform targetTransform = currentGun.GetComponentInChildren<LeftHandTargetTransform>().transform;
 
-    leftHand.localPosition = targetTransform.localPosition;
-    leftHand.localRotation = targetTransform.localRotation;
+    leftHandIk_Target.localPosition = targetTransform.localPosition;
+    leftHandIk_Target.localRotation = targetTransform.localRotation;
   }
-
   private void SwitchAnimationLayer(int layerIndex)
   {
     for (int i = 1; i < anim.layerCount; i++)
     {
-      anim.SetLayerWeight(i,0);
+      anim.SetLayerWeight(i, 0);
     }
-    anim.SetLayerWeight(layerIndex,1);
+
+    anim.SetLayerWeight(layerIndex, 1);
   }
+  public enum GrabType{ SideGrab,BackGrab };
   
 }
