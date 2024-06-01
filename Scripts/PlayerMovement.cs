@@ -13,15 +13,16 @@ public class PlayerMovement : MonoBehaviour
   private Animator animator;
   
   [Header("Movement Info")]
-  [SerializeField]  private Vector3 movementdirection;
   [SerializeField] private float walkspeed;
   [SerializeField] private float runspeed;
   [SerializeField] private float turnspeed;
+  
   private float speed;
   private bool isRunning;
   private float verticalvelocity;
   private float gravityscale = 9.81f;
-  public Vector2 moveInput;
+  public Vector2 moveInput { get; private set; }
+  private Vector3 movementdirection;
   
   private void Start()
   {
