@@ -1,7 +1,14 @@
 
 using System;
 using UnityEngine;
-
+/*
+    This script defines animation events triggered during player actions.
+    Features:
+    - Handles animation events related to reloading, returning rig, and weapon grabbing.
+    - Communicates with the PlayerWeaponVisuals component to update visuals accordingly.
+    Dependencies:
+    - Requires the PlayerWeaponVisuals component to be present in the parent GameObject.
+*/
 public class PlayerAnimationEvent : MonoBehaviour
 {
 

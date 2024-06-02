@@ -3,6 +3,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
+/*
+    This script handles player movement and rotation based on input controls.
+    Features:
+    - Controls player movement in response to input from the PlayerControlls component.
+    - Rotates the player character to face the direction of movement and aim.
+    - Manages player animations based on movement speed and direction.
+
+*/
 public class PlayerMovement : MonoBehaviour
 {
 

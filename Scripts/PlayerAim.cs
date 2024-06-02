@@ -1,8 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
-using UnityEngine.Serialization;
+/*
+    This script handles player aiming mechanics and camera movement based on mouse input.
+    Features:
+    - Tracks mouse input to determine the point of aim in the game world.
+    - Adjusts camera position dynamically based on the aim direction and player movement.
+    - Provides functionality to retrieve information about the object aimed at by the player.
+*/
 
 public class PlayerAim : MonoBehaviour
 {
@@ -11,6 +15,8 @@ public class PlayerAim : MonoBehaviour
     
     [Header("Aim Info")]
     [SerializeField] private Transform aim;
+
+    [SerializeField] private bool isAimingPrecisly;
     
     
     [Header("Camera Info")]
@@ -35,29 +41,48 @@ public class PlayerAim : MonoBehaviour
 
     private void Update()
     {
-
-        aim.position = GetMouseHitInfo().point;
-        aim.position = new Vector3(aim.position.x, transform.position.y + 1, aim.position.z);
-        cameraTarget.position = Vector3.Lerp(cameraTarget.position, DesieredCameraPosition(), cameraSensitivity * Time.deltaTime);
+        UpdateAimPosition();
+        UpdateCameraPosition();
     }
 
+    private void UpdateCameraPosition()
+    {
+        cameraTarget.position = 
+            Vector3.Lerp(cameraTarget.position, DesieredCameraPosition(), cameraSensitivity * Time.deltaTime);
+    }
+
+    private void UpdateAimPosition()
+    {
+        aim.position = GetMouseHitInfo().point;
+        if(!isAimingPrecisly) aim.position = new Vector3(aim.position.x, transform.position.y + 1, aim.position.z);
+    }
+
+    // Calculate the desired camera position based on aim direction and player movement
     private Vector3 DesieredCameraPosition()
     {
-
+        // Adjust maximum camera distance based on player movement
         float actualMaxCameraDistance = player.movement.moveInput.y < -.5f ? minCameraDistance : maxCameraDistance;
         Vector3 desieredCameraPosition = GetMouseHitInfo().point;
         Vector3 aimDirection = (desieredCameraPosition - transform.position).normalized;
         
         float distanceToDesiredPosition = Vector3.Distance(transform.position, desieredCameraPosition);
         float clampledDistance = Mathf.Clamp(distanceToDesiredPosition, minCameraDistance, maxCameraDistance);
-
+        
+        // Calculate the desired camera position based on aim direction
         desieredCameraPosition = transform.position + aimDirection * clampledDistance;
         desieredCameraPosition.y = transform.position.y + 1;
 
         return desieredCameraPosition;
     }
 
+    public bool CanAimPrecisley()
+    {
+        if (isAimingPrecisly) return true;
+        return false;
+    }
 
+
+    // Retrieve information about the object aimed at by the player
     public RaycastHit GetMouseHitInfo()
     {
         
