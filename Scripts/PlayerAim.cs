@@ -17,6 +17,7 @@ public class PlayerAim : MonoBehaviour
     [SerializeField] private Transform aim;
 
     [SerializeField] private bool isAimingPrecisly;
+    [SerializeField] private bool isLockingToTarget;
     
     
     [Header("Camera Info")]
@@ -38,25 +39,39 @@ public class PlayerAim : MonoBehaviour
 
         AssignInputEvents();
     }
-
     private void Update()
     {
         UpdateAimPosition();
         UpdateCameraPosition();
     }
 
+    public Transform Target()
+    {
+        Transform target = null;
+        if (GetMouseHitInfo().transform.GetComponent<Target>() != null)
+        {
+            target = GetMouseHitInfo().transform;
+        }
+
+        return target;
+    }
     private void UpdateCameraPosition()
     {
         cameraTarget.position = 
             Vector3.Lerp(cameraTarget.position, DesieredCameraPosition(), cameraSensitivity * Time.deltaTime);
     }
-
     private void UpdateAimPosition()
     {
+        Transform target = Target();
+
+        if (target != null && isLockingToTarget)
+        {
+            aim.position = target.position;
+                return;
+        }
         aim.position = GetMouseHitInfo().point;
         if(!isAimingPrecisly) aim.position = new Vector3(aim.position.x, transform.position.y + 1, aim.position.z);
     }
-
     // Calculate the desired camera position based on aim direction and player movement
     private Vector3 DesieredCameraPosition()
     {
@@ -74,14 +89,11 @@ public class PlayerAim : MonoBehaviour
 
         return desieredCameraPosition;
     }
-
     public bool CanAimPrecisley()
     {
         if (isAimingPrecisly) return true;
         return false;
     }
-
-
     // Retrieve information about the object aimed at by the player
     public RaycastHit GetMouseHitInfo()
     {

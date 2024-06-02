@@ -39,7 +39,7 @@ public class PlayerWeaponController : MonoBehaviour
     {
         Vector3 direction = (aim.position - gunPoint.position).normalized; // Calculate the direction from the gun point to the aim position
 
-        if (player.aim.CanAimPrecisley() == false)
+        if (player.aim.CanAimPrecisley() == false && player.aim.Target() == null)
         {
             direction.y = 0;  // Ensure the bullet direction stays parallel to the ground
         }
