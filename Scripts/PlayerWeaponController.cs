@@ -15,7 +15,7 @@ public class PlayerWeaponController : MonoBehaviour
     [SerializeField] private Transform gunPoint;
     
     [SerializeField] private Transform weaponHolder;
-    [SerializeField] private Transform aim;
+  
 
     private void Start()
     {
@@ -35,8 +35,10 @@ public class PlayerWeaponController : MonoBehaviour
     }
 
     // Method to calculate the direction of the bullet
-    public Vector3 BulletDirection() 
+    public Vector3 BulletDirection()
     {
+
+        Transform aim = player.aim.Aim();
         Vector3 direction = (aim.position - gunPoint.position).normalized; // Calculate the direction from the gun point to the aim position
 
         if (player.aim.CanAimPrecisley() == false && player.aim.Target() == null)
@@ -45,8 +47,8 @@ public class PlayerWeaponController : MonoBehaviour
         }
         
         // Rotate the weapon holder and gun point to aim at the target
-        weaponHolder.LookAt(aim);
-        gunPoint.LookAt(aim);
+        //weaponHolder.LookAt(aim); TODO FIND A BETTER PLACE FOR IT
+        //gunPoint.LookAt(aim);
         return direction;
     }
 
