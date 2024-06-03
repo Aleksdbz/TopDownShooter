@@ -35,7 +35,7 @@ public class PlayerWeaponController : MonoBehaviour
     }
 
     // Method to calculate the direction of the bullet
-    private Vector3 BulletDirection() 
+    public Vector3 BulletDirection() 
     {
         Vector3 direction = (aim.position - gunPoint.position).normalized; // Calculate the direction from the gun point to the aim position
 
@@ -49,4 +49,6 @@ public class PlayerWeaponController : MonoBehaviour
         gunPoint.LookAt(aim);
         return direction;
     }
+
+    public Transform GunPoint() => gunPoint;
 }
