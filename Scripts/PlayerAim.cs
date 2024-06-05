@@ -52,7 +52,7 @@ public class PlayerAim : MonoBehaviour
         
         Transform gunPoint = player.WeaponController.GunPoint();
         Vector3 laserDirection = player.WeaponController.BulletDirection();
-        float justTheTip = 0.5f;
+        float laserLenght = 0.5f;
         float gunDistance = 4f;
         
         Vector3 endPoint = gunPoint.position + laserDirection * gunDistance;
@@ -60,11 +60,11 @@ public class PlayerAim : MonoBehaviour
         if (Physics.Raycast(gunPoint.position, laserDirection, out RaycastHit hit, gunDistance))
         {
             endPoint = hit.point;
-            justTheTip = 0;
+            laserLenght = 0;
         }
         aimLaser.SetPosition(0,gunPoint.position);
         aimLaser.SetPosition(1,endPoint);
-        aimLaser.SetPosition(2,endPoint + laserDirection * justTheTip);
+        aimLaser.SetPosition(2,endPoint + laserDirection * laserLenght);
         
     }
     public Transform Target()
